@@ -45,46 +45,46 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * This is NOT an opmode.
- *
+ * <p>
  * This class can be used to define all the specific hardware for a single robot.
  * In this case the robot name is Tobot. The file also defines routines that can be
  * used to control ToBot during autonomous and teleop modes, e.g. forwardInches()
  * and rotateDegrees().
  * See ToBot_TeleOp and others classes starting with "ToBot" for usage examples.
- *
+ * <p>
  * This hardware class assumes the following device names have been configured on the robot:
  * Note:  All names are lower case and some have single spaces between words.
- *
+ * <p>
  * Motor channel:  Left  drive motor:        "left_drive"
  * Motor channel:  Right drive motor:        "right_drive"
  */
-public class HardwareToBot
-{
+public class HardwareToBot {
     /* Public OpMode members. */
-    public DcMotor   leftDrive   = null;
-    public DcMotor   rightDrive  = null;
+    public DcMotor leftDrive = null;
+    public DcMotor rightDrive = null;
     public BNO055IMU imu = null;
 
-    final double INCHES_PER_ROTATION = 4*Math.PI; // assume 4-inches wheels
+    final double INCHES_PER_ROTATION = 4 * Math.PI; // assume 4-inches wheels
     final double COUNT_PER_ROTATION = 1120;       // assume NeveRest 40 motor
     final double COUNT_PER_INCHES = COUNT_PER_ROTATION / INCHES_PER_ROTATION;
 
     /* local OpMode members. */
-    HardwareMap hwMap           =  null;
-    Telemetry   tel             =  null;
-    private ElapsedTime runtime  = new ElapsedTime();
+    HardwareMap hwMap = null;
+    Telemetry tel = null;
+    private ElapsedTime runtime = new ElapsedTime();
 
     /* Constructor */
-    public HardwareToBot(){}
+    public HardwareToBot() {
+    }
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap, Telemetry tel) {
         // Save reference to Hardware map
         hwMap = ahwMap;
-        tel = tel;
+        this.tel = tel;
 
         // Define and Initialize Motors
-        leftDrive  = hwMap.get(DcMotor.class, "left_drive");
+        leftDrive = hwMap.get(DcMotor.class, "left_drive");
         rightDrive = hwMap.get(DcMotor.class, "right_drive");
         leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
@@ -107,10 +107,10 @@ public class HardwareToBot
         runtime.reset();
 
         // positive power will move forward, negative power will move backward
-        if (power>1) power=1;
-        if (power<-1) power=-1;
+        if (power > 1) power = 1;
+        if (power < -1) power = -1;
 
-        int target_count = (int)(distance * COUNT_PER_INCHES * Math.signum(power));
+        int target_count = (int) (distance * COUNT_PER_INCHES * Math.signum(power));
 
         int newLeftTarget = leftDrive.getTargetPosition() + target_count;
         int newRightTarget = rightDrive.getTargetPosition() + target_count;
@@ -128,8 +128,8 @@ public class HardwareToBot
                 (leftDrive.isBusy() && rightDrive.isBusy())) {
 
             // Display it for the driver.
-            tel.addData("Wheels",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-            tel.addData("Wheels",  "Running at %7d :%7d",
+            tel.addData("Wheels", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+            tel.addData("Wheels", "Running at %7d :%7d",
                     leftDrive.getCurrentPosition(),
                     rightDrive.getCurrentPosition());
             tel.update();
@@ -151,11 +151,11 @@ public class HardwareToBot
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
         // provide positional information.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
@@ -181,24 +181,40 @@ public class HardwareToBot
 
         double tar_degree = getHeading() + degree;
         double cur_degree = getHeading();
-        if (degree>0) { // right turn
+        boolean gap = tar_degree >= 180.0 || tar_degree < -180.0;
+        if (degree > 0) { // right turn
             leftDrive.setPower(Math.abs(power));
-            rightDrive.setPower(-1*Math.abs(power));
+            rightDrive.setPower(-1 * Math.abs(power));
         } else { // left turn
-            leftDrive.setPower(-1*Math.abs(power));
+            leftDrive.setPower(-1 * Math.abs(power));
             rightDrive.setPower(Math.abs(power));
         }
-
+        double newHeading;
         while (runtime.seconds() < timeoutS &&
-                Math.abs(cur_degree-tar_degree)>IMU_PRECISION) {
+                Math.abs(cur_degree - tar_degree) > IMU_PRECISION) {
             // Display it for the driver.
-            tel.addData("imu/target =",  "%2.1f /%2.1f", cur_degree,tar_degree);
+            tel.addData("imu/target =", "%2.1f /%2.1f", cur_degree, tar_degree);
             tel.update();
+            newHeading = getHeading();
+            //running over the gap
+            if (cur_degree * newHeading < -100.0) {
+                tar_degree -= 360.0;
+            } else {
+                tar_degree += 360.0;
+            }
+            if (degree > 0) {
+                if (newHeading >= tar_degree)
+                    break;
+            } else {
+                if (newHeading <= tar_degree)
+                    break;
+            }
+            cur_degree = newHeading;
         }
 
         // Stop all motion;
         leftDrive.setPower(0);
         rightDrive.setPower(0);
     }
- }
+}
 
