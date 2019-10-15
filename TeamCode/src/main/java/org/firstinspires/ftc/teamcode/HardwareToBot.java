@@ -85,18 +85,19 @@ public class HardwareToBot {
 
         // Define and Initialize Motors
         leftDrive = hwMap.get(DcMotor.class, "left_drive");
-        rightDrive = hwMap.get(DcMotor.class, "right_drive");
+        //TODO please initialize rightDrive here
+
         leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rightDrive.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        // TODO Set the rightDrive to REVERSE
 
         // Set all motors to zero power
         leftDrive.setPower(0);
-        rightDrive.setPower(0);
+        //TODO set rightDrive power to 0
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //TODO set mode for rightDrive as well
 
         initializeIMU();
     }
@@ -112,8 +113,8 @@ public class HardwareToBot {
 
         int target_count = (int) (distance * COUNT_PER_INCHES * Math.signum(power));
 
-        int newLeftTarget = leftDrive.getTargetPosition() + target_count;
-        int newRightTarget = rightDrive.getTargetPosition() + target_count;
+        int newLeftTarget = leftDrive.getCurrentPosition() + target_count;
+        int newRightTarget = rightDrive.getCurrentPosition() + target_count;
 
         leftDrive.setTargetPosition(newLeftTarget);
         rightDrive.setTargetPosition(newRightTarget);
@@ -169,7 +170,7 @@ public class HardwareToBot {
         Orientation orientation = imu.getAngularOrientation(
                 AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES
         );
-        return orientation.firstAngle;
+        return -orientation.firstAngle;
     }
 
     // Turn the robot using IMU heading to determine the degree
@@ -181,7 +182,7 @@ public class HardwareToBot {
 
         double tar_degree = getHeading() + degree;
         double cur_degree = getHeading();
-        boolean gap = tar_degree >= 180.0 || tar_degree < -180.0;
+
         if (degree > 0) { // right turn
             leftDrive.setPower(Math.abs(power));
             rightDrive.setPower(-1 * Math.abs(power));
@@ -198,9 +199,11 @@ public class HardwareToBot {
             newHeading = getHeading();
             //running over the gap
             if (cur_degree * newHeading < -100.0) {
-                tar_degree -= 360.0;
-            } else {
-                tar_degree += 360.0;
+                if (degree > 0) {
+                    tar_degree -= 360.0;
+                } else {
+                    tar_degree += 360.0;
+                }
             }
             if (degree > 0) {
                 if (newHeading >= tar_degree)

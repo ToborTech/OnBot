@@ -80,11 +80,11 @@ public class ToBot_TeleOp extends LinearOpMode {
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
             // This way it's also easy to just drive straight, or just turn.
             drive = -gamepad1.left_stick_y;
-            turn  =  gamepad1.right_stick_x;
+            //TODO assign the value gamepad1.right_stick_x to variable "turn"
 
             // Combine drive and turn for blended motion.
             left  = drive + turn;
-            right = drive - turn;
+            //TODO evaluate the value of "right"
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
@@ -96,7 +96,7 @@ public class ToBot_TeleOp extends LinearOpMode {
 
             // Output the safe vales to the motor drives.
             robot.leftDrive.setPower(left*speed_ratio);
-            robot.rightDrive.setPower(right*speed_ratio);
+            //TODO set the power for leftDrive
 
             // Use gamepad buttons to speed up (Y) and down (A)
             if (gamepad1.y) {
@@ -110,6 +110,7 @@ public class ToBot_TeleOp extends LinearOpMode {
 
             // Send telemetry message to signify robot running;
             telemetry.addData("speed",  "ratio = %.2f", speed_ratio);
+            telemetry.addData("leftsticky",  "%.2f", gamepad1.left_stick_y);
             telemetry.addData("left",  "%.2f", left);
             telemetry.addData("right", "%.2f", right);
             telemetry.update();
