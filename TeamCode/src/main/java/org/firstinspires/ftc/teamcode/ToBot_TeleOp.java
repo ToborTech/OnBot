@@ -34,8 +34,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
-
 /**
  * This OpMode uses the common ToBot hardware class to define the devices on the robot.
  * All device access is managed through the HardwareToBot class.
@@ -81,10 +79,12 @@ public class ToBot_TeleOp extends LinearOpMode {
             // This way it's also easy to just drive straight, or just turn.
             drive = -gamepad1.left_stick_y;
             //TODO assign the value gamepad1.right_stick_x to variable "turn"
+            turn = gamepad1.right_stick_x;
 
             // Combine drive and turn for blended motion.
             left  = drive + turn;
             //TODO evaluate the value of "right"
+            right = drive - turn;
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
@@ -96,6 +96,7 @@ public class ToBot_TeleOp extends LinearOpMode {
 
             // Output the safe vales to the motor drives.
             robot.leftDrive.setPower(left*speed_ratio);
+            robot.rightDrive.setPower(right*speed_ratio);
             //TODO set the power for leftDrive
 
             // Use gamepad buttons to speed up (Y) and down (A)
@@ -110,9 +111,11 @@ public class ToBot_TeleOp extends LinearOpMode {
 
             // Send telemetry message to signify robot running;
             telemetry.addData("speed",  "ratio = %.2f", speed_ratio);
-            telemetry.addData("leftsticky",  "%.2f", gamepad1.left_stick_y);
-            telemetry.addData("left",  "%.2f", left);
-            telemetry.addData("right", "%.2f", right);
+            telemetry.addData("left (enc)",  "%.2f(%d)",
+                    left, robot.leftDrive.getCurrentPosition());
+            telemetry.addData("right (enc)", "%.2f(%d)",
+                    right, robot.rightDrive.getCurrentPosition());
+            telemetry.addData("imu", "%.2f", robot.getHeading());
             telemetry.update();
 
             // Pace this loop so jaw action is reasonable speed.

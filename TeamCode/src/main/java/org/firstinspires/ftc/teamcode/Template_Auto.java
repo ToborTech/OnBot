@@ -23,7 +23,14 @@ public class Template_Auto extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
 
-        //TODO write your auto codes here
+        // Forward for 20 inches using 0.5 power, with 3 seconds time out
+        robot.forward(0.5, 20, 3);
+
+	// wait for 0.5 sec
+        sleep(500);
+
+        // Left turn for 90 degree using 0.3 power with 2 seconds time out
+        robot.turn(0.3, 90, 2); // left turn 90
 
     }
 }
