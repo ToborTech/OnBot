@@ -24,9 +24,11 @@ public class Template_Auto extends LinearOpMode {
         waitForStart();
 
         //TODO write your auto codes here
-        for (int i = 0; i < 4; i++) {
-            robot.forward(0.5, 20, 5000);
-            robot.turn(0.5, 90, 4000);
+        for (int i = 0; (i < 4) && opModeIsActive(); i++) {
+            robot.forward(0.5, 20, 3);
+            sleep(500);
+            robot.turn(0.3, 90, 2); // left turn 90
+            sleep(500);
         }
     }
 }

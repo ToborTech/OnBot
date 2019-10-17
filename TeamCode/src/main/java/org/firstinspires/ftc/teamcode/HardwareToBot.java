@@ -65,8 +65,9 @@ public class HardwareToBot {
     public DcMotor rightDrive = null;
     public BNO055IMU imu = null;
 
-    final double INCHES_PER_ROTATION = 4 * Math.PI; // assume 4-inches wheels
-    final double COUNT_PER_ROTATION = 1120;       // assume NeveRest 40 motor
+    final double INCHES_PER_ROTATION = 3.5 * Math.PI; // assume 4-inches wheels
+    // final double COUNT_PER_ROTATION = 1120;   // for NeveRest 40 motor
+    final double COUNT_PER_ROTATION = 288;       // for Rev Core Hex motor
     final double COUNT_PER_INCHES = COUNT_PER_ROTATION / INCHES_PER_ROTATION;
 
     /* local OpMode members. */
@@ -94,6 +95,10 @@ public class HardwareToBot {
         leftDrive.setPower(0);
         rightDrive.setPower(0);
 
+        // reset encoder value
+        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -113,8 +118,8 @@ public class HardwareToBot {
 
         int target_count = (int) (distance * COUNT_PER_INCHES * Math.signum(power));
 
-        int newLeftTarget = leftDrive.getTargetPosition() + target_count;
-        int newRightTarget = rightDrive.getTargetPosition() + target_count;
+        int newLeftTarget = leftDrive.getCurrentPosition() + target_count;
+        int newRightTarget = rightDrive.getCurrentPosition() + target_count;
 
         leftDrive.setTargetPosition(newLeftTarget);
         rightDrive.setTargetPosition(newRightTarget);
@@ -183,7 +188,7 @@ public class HardwareToBot {
         double tar_degree = getHeading() + degree;
         double cur_degree = getHeading();
         boolean gap = tar_degree >= 180.0 || tar_degree < -180.0;
-        if (degree > 0) { // right turn
+        if (degree < 0) { // right turn
             leftDrive.setPower(Math.abs(power));
             rightDrive.setPower(-1 * Math.abs(power));
         } else { // left turn
@@ -198,10 +203,13 @@ public class HardwareToBot {
             tel.update();
             newHeading = getHeading();
             //running over the gap
-            if (cur_degree * newHeading < -100.0) {
-                tar_degree -= 360.0;
-            } else {
-                tar_degree += 360.0;
+            if (gap && (cur_degree * newHeading < -100.0)) {
+                if (degree>0) {
+                    tar_degree -= 360.0;
+                } else {
+                    tar_degree += 360.0;
+                }
+                gap = false;
             }
             if (degree > 0) {
                 if (newHeading >= tar_degree)

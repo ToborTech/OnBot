@@ -108,8 +108,11 @@ public class ToBot_TeleOp extends LinearOpMode {
 
             // Send telemetry message to signify robot running;
             telemetry.addData("speed",  "ratio = %.2f", speed_ratio);
-            telemetry.addData("left",  "%.2f", left);
-            telemetry.addData("right", "%.2f", right);
+            telemetry.addData("left (enc)",  "%.2f(%d)",
+                    left, robot.leftDrive.getCurrentPosition());
+            telemetry.addData("right (enc)", "%.2f(%d)",
+                    right, robot.rightDrive.getCurrentPosition());
+            telemetry.addData("imu", "%.2f", robot.getHeading());
             telemetry.update();
 
             // Pace this loop so jaw action is reasonable speed.
