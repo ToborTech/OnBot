@@ -64,7 +64,7 @@ public class HardwareToBot {
     public DcMotor rightDrive = null;
     public BNO055IMU imu = null;
 
-    final double INCHES_PER_ROTATION = 3.5 * Math.PI; // assume 4-inches wheels
+    final double INCHES_PER_ROTATION = 3.5 * Math.PI; // assume 3.5-inches wheels
     // final double COUNT_PER_ROTATION = 1120;   // for NeveRest 40 motor
     final double COUNT_PER_ROTATION = 288;       // for Rev Core Hex motor
     final double COUNT_PER_INCHES = COUNT_PER_ROTATION / INCHES_PER_ROTATION;
@@ -86,14 +86,14 @@ public class HardwareToBot {
 
         // Define and Initialize Motors
         leftDrive = hwMap.get(DcMotor.class, "left_drive");
-        //TODO please initialize rightDrive here
+        // TODO: please initialize rightDrive here
 
         leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        // TODO Set the rightDrive to REVERSE
+        // TODO: Set the rightDrive to REVERSE
 
         // Set all motors to zero power
         leftDrive.setPower(0);
-        //TODO set rightDrive power to 0
+        // TODO: set rightDrive power to 0
 
         // reset encoder value
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -102,7 +102,7 @@ public class HardwareToBot {
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //TODO set mode for rightDrive as well
+        // TODO: set mode for rightDrive as well
 
         initializeIMU();
     }

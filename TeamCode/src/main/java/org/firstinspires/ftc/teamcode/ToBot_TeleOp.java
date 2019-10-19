@@ -74,18 +74,18 @@ public class ToBot_TeleOp extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             drive = -gamepad1.left_stick_y;
-            //TODO assign the value gamepad1.right_stick_x to variable "turn"
+            // TODO: assign the value gamepad1.right_stick_x to variable "turn"
 
             // Combine drive and turn for blended motion.
             left  = drive + turn;
-            //TODO evaluate the value of "right": drive - turn
+            // TODO: evaluate the value of "right": drive - turn
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
             if (max > 1.0) { left /= max; right /= max; }
             // Output the safe vales to the motor drives.
             robot.leftDrive.setPower(left*speed_ratio);
-            //TODO set the power for leftDrive
+            // TODO: set the power for leftDrive
 
             // Use gamepad buttons to speed up (Y) and down (A)
             if (gamepad1.y) {
