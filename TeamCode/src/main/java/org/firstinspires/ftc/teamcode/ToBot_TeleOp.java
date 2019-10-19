@@ -53,11 +53,11 @@ public class ToBot_TeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        double left;
-        double right;
-        double drive;
-        double turn;
-        double max;
+        double left = 0;
+        double right = 0;
+        double drive = 0;
+        double turn = 0;
+        double max = 0;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -73,30 +73,18 @@ public class ToBot_TeleOp extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-
-            // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-            // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
-            // This way it's also easy to just drive straight, or just turn.
             drive = -gamepad1.left_stick_y;
             //TODO assign the value gamepad1.right_stick_x to variable "turn"
-            turn = gamepad1.right_stick_x;
 
             // Combine drive and turn for blended motion.
             left  = drive + turn;
-            //TODO evaluate the value of "right"
-            right = drive - turn;
+            //TODO evaluate the value of "right": drive - turn
 
             // Normalize the values so neither exceed +/- 1.0
             max = Math.max(Math.abs(left), Math.abs(right));
-            if (max > 1.0)
-            {
-                left /= max;
-                right /= max;
-            }
-
+            if (max > 1.0) { left /= max; right /= max; }
             // Output the safe vales to the motor drives.
             robot.leftDrive.setPower(left*speed_ratio);
-            robot.rightDrive.setPower(right*speed_ratio);
             //TODO set the power for leftDrive
 
             // Use gamepad buttons to speed up (Y) and down (A)

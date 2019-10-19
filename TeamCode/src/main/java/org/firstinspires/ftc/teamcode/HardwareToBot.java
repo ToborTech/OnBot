@@ -87,16 +87,13 @@ public class HardwareToBot {
         // Define and Initialize Motors
         leftDrive = hwMap.get(DcMotor.class, "left_drive");
         //TODO please initialize rightDrive here
-        rightDrive = hwMap.get(DcMotor.class, "right_drive");
 
         leftDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         // TODO Set the rightDrive to REVERSE
-        rightDrive.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
 
         // Set all motors to zero power
         leftDrive.setPower(0);
         //TODO set rightDrive power to 0
-        rightDrive.setPower(0);
 
         // reset encoder value
         leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -106,7 +103,6 @@ public class HardwareToBot {
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //TODO set mode for rightDrive as well
-        rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         initializeIMU();
     }
@@ -192,7 +188,7 @@ public class HardwareToBot {
         double tar_degree = getHeading() + degree;
         double cur_degree = getHeading();
         boolean gap = tar_degree >= 180.0 || tar_degree < -180.0;
-        if (degree < 0) { // right turn
+        if (degree > 0) { // right turn
             leftDrive.setPower(Math.abs(power));
             rightDrive.setPower(-1 * Math.abs(power));
         } else { // left turn
