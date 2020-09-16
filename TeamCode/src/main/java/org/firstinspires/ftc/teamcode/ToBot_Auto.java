@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @Autonomous(name = "ToBot: autonomous", group = "ToBot")
-public class Template_Auto extends LinearOpMode {
+public class ToBot_Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
